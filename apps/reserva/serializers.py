@@ -2,7 +2,7 @@ from rest_framework import serializers
 from datetime import datetime, timezone
 from dateutil.relativedelta import relativedelta
 
-from apps.reserva.models import Cancha, Reserva
+from apps.reserva.models import Cancha, Reserva, Turno
 
 
 class CanchaSerializer(serializers.ModelSerializer):
@@ -16,24 +16,28 @@ class CanchaSerializer(serializers.ModelSerializer):
             'activa',
         ]
 
+class TurnoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Turno
+        fields = ['id', 'hora_inicio', 'hora_fin']
 
 class ReservaSerializer(serializers.ModelSerializer):
     cancha = serializers.PrimaryKeyRelatedField(queryset=Cancha.objects.all(), many=False)
     usuario = serializers.StringRelatedField(many = False)
+    turno = serializers.PrimaryKeyRelatedField(queryset=Turno.objects.all(), many=False)
     class Meta:
         model = Reserva
         fields = [
             'id',
+            'usuario',
             'fecha',
-            'hora_inicio',
-            'hora_fin',
-            'activa',
+            'turno',
             'cancha',
-            'usuario', #
-            'precio_total'
+            'total',
+            'activa'
         ]
         read_only_fields =[
-            'precio_total'
+            'total', 'usuario'
             ]
 
     def validate_fecha(self, value):
@@ -44,47 +48,23 @@ class ReservaSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("La fecha de la reserva no puede ser anterior a la fecha actual.")
         return value
 
-    def validate(self, data):
-        # Validar que la hora de fin sea posterior a la hora de inicio
-        if data['hora_fin'] <= data['hora_inicio']:
-            raise serializers.ValidationError("La hora de fin debe ser posterior a la hora de inicio.")
-
-        #Validar solapamiento de reservas en la misma cancha
-        reservas_existentes = Reserva.objects.filter(
-            fecha=data['fecha'],
-            cancha=data['cancha'],
-            activa=True
-        )
-
-        for reserva in reservas_existentes:
-            inicio_existente = reserva.hora_inicio
-            fin_existente = reserva.hora_fin
-            nuevo_inicio = data['hora_inicio']
-            nuevo_fin = data['hora_fin']
-
-            if not (nuevo_fin <= inicio_existente or nuevo_inicio >= fin_existente):
-                raise serializers.ValidationError("Ya existe una reserva en ese horario para esta cancha.")
-
-        return data
-
-
 
 
 class ReservaReadSerializer(serializers.ModelSerializer):
     cancha = serializers.StringRelatedField(many=False)
     usuario = serializers.StringRelatedField(many = False)
+    turno = serializers.StringRelatedField(many=False)
     class Meta:
         model = Reserva
         fields = [
             'id',
+            'usuario',
             'fecha',
-            'hora_inicio',
-            'hora_fin',
-            'activa',
+            'turno',
             'cancha',
-            'usuario', #
-            'precio_total'
+            'total',
+            'activa'
         ]
-        read_only_fields =[
-            'precio_total'
-            ]
+        read_only_fields = [
+            'total', 'usuario'
+        ]
