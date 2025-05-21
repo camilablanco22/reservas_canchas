@@ -1,9 +1,12 @@
 from rest_framework import viewsets
 
-from apps.reserva.models import Cancha, Reserva
-from apps.reserva.serializers import CanchaSerializer, ReservaReadSerializer, ReservaSerializer
+from apps.reserva.models import Cancha, Reserva, Turno
+from apps.reserva.serializers import CanchaSerializer, ReservaReadSerializer, ReservaSerializer, TurnoSerializer
 from apps.usuario.models import Usuario
 
+class TurnoViewSet(viewsets.ModelViewSet):
+    queryset = Turno.objects.all()
+    serializer_class = TurnoSerializer
 
 class CanchaViewSet(viewsets.ModelViewSet):
     queryset= Cancha.objects.all()

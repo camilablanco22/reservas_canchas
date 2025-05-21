@@ -1,3 +1,4 @@
+import pytz
 from rest_framework import serializers
 from datetime import datetime, timezone
 from dateutil.relativedelta import relativedelta
@@ -21,6 +22,12 @@ class TurnoSerializer(serializers.ModelSerializer):
         model = Turno
         fields = ['id', 'hora_inicio', 'hora_fin']
 
+    def validate(self, data):
+        if data['hora_fin']<= data['hora_inicio']:
+            raise serializers.ValidationError("La hora de incio no puede ser posterior a la hora de fin")
+        return data
+
+
 class ReservaSerializer(serializers.ModelSerializer):
     cancha = serializers.PrimaryKeyRelatedField(queryset=Cancha.objects.all(), many=False)
     usuario = serializers.StringRelatedField(many = False)
@@ -42,10 +49,15 @@ class ReservaSerializer(serializers.ModelSerializer):
 
     def validate_fecha(self, value):
         #Verificar que el fecha sea posterior a la fecha actual
-        fecha_actual = datetime.now(timezone.utc).date()
+        zona_horaria = pytz.timezone("America/Argentina/Buenos_Aires")
+
+        # Obtener la fecha actual en esa zona horaria
+        fecha_actual = datetime.now(zona_horaria).date()
 
         if value < fecha_actual:
             raise serializers.ValidationError("La fecha de la reserva no puede ser anterior a la fecha actual.")
+        if value == fecha_actual:
+            raise serializers.ValidationError("No se permiten reservas para el mismo día.")
         return value
 
 
