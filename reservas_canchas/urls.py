@@ -17,9 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from apps.reserva.api import TurnosDisponiblesPorCanchaView
 from reservas_canchas.router import router
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+    path('api/', include('apps.reserva.urls', namespace = 'reserva'))
 ]
