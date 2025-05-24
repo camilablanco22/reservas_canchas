@@ -1,3 +1,5 @@
+from datetime import datetime, date
+from decimal import Decimal
 
 from django.db import models
 
@@ -34,8 +36,19 @@ class Reserva(models.Model):
     activa = models.BooleanField(default=True)
     total = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
 
-    class Meta:
-        unique_together = ('fecha', 'cancha', 'turno')  #no puede existir más de una reserva con la misma combinación de...
+    def calcular_total(self):
+        inicio = datetime.combine(date.min, self.turno.hora_inicio)
+        fin = datetime.combine(date.min, self.turno.hora_fin)
+        duracion_horas = Decimal((fin - inicio).seconds) / Decimal(3600)
+        return self.cancha.precio_por_hora * duracion_horas
+
+    def save(self, *args, **kwargs):
+        self.total = self.calcular_total()
+        super().save(*args, **kwargs)
+
+
+
+
 
 
 
