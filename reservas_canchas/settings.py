@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'django_filters',
+    'rest_framework_simplejwt',
     'apps.usuario',
     'apps.reserva',
 ]
@@ -133,4 +134,15 @@ REST_FRAMEWORK= {
         'rest_framework.renderers.BrowsableAPIRenderer'],
     'DEFAULT_FILTER_BACKENDS': [
             'django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+            'rest_framework_simplejwt.authentication.JWTAuthentication'],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissions',],
+}
+
+SIMPLE_JWT = {
+    'SIGNING_KEY': SECRET_KEY,  # Presente por defecto en settings
+    'ALGORITHM': 'HS256',  # Algoritmo de firma
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60), #Tiempo de vida del token
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1), #Tiempo de vida del token de refresco
 }
