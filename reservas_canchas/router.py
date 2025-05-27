@@ -1,6 +1,6 @@
 from rest_framework import routers
 
-from apps.reserva.api import CanchaViewSet, ReservaViewSet, TurnoViewSet
+from apps.reserva.api.api import CanchaViewSet, ReservaViewSet, TurnoViewSet
 
 #Inicializar el router de DRF solo una vez
 router = routers.DefaultRouter()

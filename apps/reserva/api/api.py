@@ -13,14 +13,17 @@ from apps.reserva.api.serializers import CanchaSerializer, ReservaReadSerializer
 
 
 class TurnoViewSet(viewsets.ModelViewSet):
+    lookup_field = 'uuid'
     queryset = Turno.objects.all()
     serializer_class = TurnoSerializer
 
 class CanchaViewSet(viewsets.ModelViewSet):
+    lookup_field = 'uuid'
     queryset= Cancha.objects.all()
     serializer_class= CanchaSerializer
 
 class ReservaViewSet(viewsets.ModelViewSet):
+    lookup_field = 'uuid'
     queryset= Reserva.objects.all()
     filterset_fields = ['fecha', 'cancha', 'estado']
     filterset_class = ReservaFilter

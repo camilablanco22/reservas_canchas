@@ -1,8 +1,7 @@
 from django.urls import path
-from rest_framework.urls import app_name
 
-from apps.reserva.api import TurnosDisponiblesPorCanchaView
-from apps.reserva.models import Reserva
+from apps.reserva.api.api import TurnosDisponiblesPorCanchaView
+
 
 app_name = 'reserva'
 urlpatterns = [
