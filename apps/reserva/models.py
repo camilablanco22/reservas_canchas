@@ -1,5 +1,6 @@
 from datetime import datetime, date
 from decimal import Decimal
+from uuid import uuid4
 
 from django.db import models
 
@@ -7,6 +8,7 @@ from apps.usuario.models import Usuario
 from reservas_canchas import settings
 
 class Cancha(models.Model):
+    uuid = models.UUIDField(default=uuid4, editable=False, unique=True)
     SUPERFICIE_CHOICES = [
         ('CEMENTO', 'CEMENTO'),
         ('SINTETICO', 'SINTETICO')
@@ -21,6 +23,7 @@ class Cancha(models.Model):
 
 
 class Turno(models.Model):
+    uuid = models.UUIDField(default=uuid4, editable=False, unique=True)
     hora_inicio = models.TimeField()
     hora_fin = models.TimeField()
 
@@ -29,6 +32,7 @@ class Turno(models.Model):
 
 
 class Reserva(models.Model):
+    uuid = models.UUIDField(default=uuid4, editable=False, unique=True)
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     cancha = models.ForeignKey(Cancha, on_delete=models.CASCADE, related_name='reservas')
     fecha = models.DateField()

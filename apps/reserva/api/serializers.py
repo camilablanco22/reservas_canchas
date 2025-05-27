@@ -10,17 +10,19 @@ class CanchaSerializer(serializers.ModelSerializer):
     class Meta:
         model= Cancha
         fields= [
-            'id',
+            'uuid',
             'numero',
             'superficie',
             'precio_por_hora',
             'activa',
         ]
+        read_only_fields = ['uuid']
 
 class TurnoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Turno
-        fields = ['id', 'hora_inicio', 'hora_fin']
+        fields = ['uuid', 'hora_inicio', 'hora_fin']
+        read_only_fields = ['uuid']
 
     def validate(self, data):
         if data['hora_fin']<= data['hora_inicio']:
@@ -33,6 +35,7 @@ class TurnoDisponibleSerializer(serializers.ModelSerializer):
         fields = ['hora_inicio', 'hora_fin']
 
 
+
 class ReservaSerializer(serializers.ModelSerializer):
     cancha = serializers.PrimaryKeyRelatedField(queryset=Cancha.objects.all(), many=False)
     usuario = serializers.StringRelatedField(many = False)
@@ -40,7 +43,7 @@ class ReservaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reserva
         fields = [
-            'id',
+            'uuid',
             'usuario',
             'fecha',
             'turno',
@@ -49,7 +52,7 @@ class ReservaSerializer(serializers.ModelSerializer):
             'activa'
         ]
         read_only_fields =[
-            'total', 'usuario'
+            'uuid','total', 'usuario'
             ]
 
     def validate(self, data):
@@ -92,7 +95,7 @@ class ReservaReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reserva
         fields = [
-            'id',
+            'uuid',
             'usuario',
             'fecha',
             'turno',
@@ -101,5 +104,5 @@ class ReservaReadSerializer(serializers.ModelSerializer):
             'activa'
         ]
         read_only_fields = [
-            'total', 'usuario'
+            'uuid','total', 'usuario'
         ]
