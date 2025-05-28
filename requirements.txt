@@ -9,4 +9,8 @@ tzdata==2025.2
 pytz==2025.2
 django-filter==25.1
 djangorestframework_simplejwt==5.5.0
+requests==2.32.3
+python-decouple==3.8
+
+
 

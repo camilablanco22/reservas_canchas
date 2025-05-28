@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/', include('apps.reserva.urls', namespace = 'reserva')),
     path('api/token/', TokenObtainPairView.as_view()),
-    path('api/token/refresh/', TokenRefreshView.as_view())
+    path('api/token/refresh/', TokenRefreshView.as_view()),
+    path('api-auth/', include('rest_framework.urls')),
 
 ]
