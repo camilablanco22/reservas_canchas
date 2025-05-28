@@ -64,9 +64,9 @@ class ReservaSerializer(serializers.ModelSerializer):
         # DAN ERROR EN PATCH YA QUE AL ENVIARSE LA INFORMACION PARCIAL EN EL BODY NO LA ENCUENTRA
 
         #SOLUCION: SI NO LO ENCUENTRA BUSQUE EN EL ATRIBUTO DE LA RESERVA Y CAMBIE
-        cancha = data.get('cancha', getattr(self.instance, 'cancha'))
-        fecha = data.get('fecha', getattr(self.instance, 'fecha'))
-        turno = data.get('turno', getattr(self.instance, 'turno'))
+        cancha = data.get('cancha', getattr(self.instance, 'cancha', None))
+        fecha = data.get('fecha', getattr(self.instance, 'fecha', None))
+        turno = data.get('turno', getattr(self.instance, 'turno', None))
 
         # Si estás actualizando una reserva, excluí esa instancia de la búsqueda
         reservas = Reserva.objects.filter(

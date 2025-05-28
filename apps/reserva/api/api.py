@@ -51,8 +51,9 @@ class ReservaViewSet(viewsets.ModelViewSet):
         obj = super().get_object()
         if not (self.request.user.is_staff or self.request.user.is_superuser):
             if obj.usuario != self.request.user:
-                raise PermissionDenied("No tenés permiso para ver esta reserva.")
+                raise PermissionDenied("No puedes acceder a esta reserva.")
         return obj
+
     #PARA PUT
     def update(self, request, *args, **kwargs):
         reserva = self.get_object()
@@ -86,12 +87,28 @@ class ReservaViewSet(viewsets.ModelViewSet):
         return super().partial_update(request, *args, **kwargs)
 
 
-class TurnosDisponiblesPorCanchaView(APIView):
+class TurnosDisponiblesPorFechaView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        fecha = request.query_params.get('fecha')
-        if not fecha:
+        fecha_str = request.query_params.get('fecha') #fecha en formato string
+
+        if not fecha_str:
             return Response({"error": "Se requiere el parámetro 'fecha' (YYYY-MM-DD)."}, status=status.HTTP_400_BAD_REQUEST)
+
+        #Intentar parsear la fecha a datetime para las comparaciones
+        try:
+            fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+        except ValueError:
+            return Response({
+                                "error": "El formato o el valor de la fecha no es válido. Asegúrese de que sea YYYY-MM-DD y una fecha existente."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        #Validar si la fecha es vieja
+        zona_horaria = pytz.timezone("America/Argentina/Buenos_Aires") #Utiliza la zona horaria de Argentina
+        fecha_actual = datetime.now(zona_horaria).date()
+        if fecha <= fecha_actual:
+            return Response({"error": "No pueden reservarse canchas en la fecha solicitada."},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         resultado = []
 
@@ -112,18 +129,35 @@ class TurnosDisponiblesPorCanchaView(APIView):
 
         return Response(resultado)
 
+
+
 class TurnosDisponiblesPorFechaYCanchaView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        fecha = request.query_params.get('fecha')
+        fecha_str = request.query_params.get('fecha') #fecha en formato string
         numero_cancha = request.query_params.get('cancha')
 
-        if not fecha or not numero_cancha:
+        if not fecha_str or not numero_cancha:
             return Response(
                 {"error": "Debe proporcionar 'fecha' y 'cancha' (número) como parámetros."},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+        #Intentar parsear la fecha a datetime para las comparaciones
+        try:
+            fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+        except ValueError:
+            return Response({
+                "error": "El formato o el valor de la fecha no es válido. Asegúrese de que sea YYYY-MM-DD y una fecha existente."},
+                status=status.HTTP_400_BAD_REQUEST)
+
+        #Validar si la fecha es vieja
+        zona_horaria = pytz.timezone("America/Argentina/Buenos_Aires")
+        fecha_actual = datetime.now(zona_horaria).date()
+        if fecha < fecha_actual:
+            return Response({"error": "La fecha consultada ya ha pasado."},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         try:
             cancha = Cancha.objects.get(numero=numero_cancha)
