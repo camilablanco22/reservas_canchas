@@ -1,8 +1,9 @@
 from datetime import datetime
 
 import pytz
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -86,10 +87,11 @@ class ReservaViewSet(viewsets.ModelViewSet):
 
 
 class TurnosDisponiblesPorCanchaView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         fecha = request.query_params.get('fecha')
         if not fecha:
-            return Response({"error": "Se requiere el parámetro 'fecha' (YYYY-MM-DD)."}, status=400)
+            return Response({"error": "Se requiere el parámetro 'fecha' (YYYY-MM-DD)."}, status=status.HTTP_400_BAD_REQUEST)
 
         resultado = []
 
@@ -109,3 +111,31 @@ class TurnosDisponiblesPorCanchaView(APIView):
             })
 
         return Response(resultado)
+
+class TurnosDisponiblesPorFechaYCanchaView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        fecha = request.query_params.get('fecha')
+        numero_cancha = request.query_params.get('cancha')
+
+        if not fecha or not numero_cancha:
+            return Response(
+                {"error": "Debe proporcionar 'fecha' y 'cancha' (número) como parámetros."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            cancha = Cancha.objects.get(numero=numero_cancha)
+        except Cancha.DoesNotExist:
+            return Response({"error": "Cancha no encontrada."}, status=404)
+
+        turnos_ocupados = Reserva.objects.filter(
+            fecha=fecha,
+            cancha=cancha
+        ).values_list('turno_id', flat=True)
+
+        turnos_disponibles = Turno.objects.exclude(id__in=turnos_ocupados)
+        serializer = TurnoDisponibleSerializer(turnos_disponibles, many=True)
+
+        return Response(serializer.data)

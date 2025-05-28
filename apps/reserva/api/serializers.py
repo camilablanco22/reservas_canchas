@@ -1,9 +1,11 @@
+from decimal import Decimal
+
 import pytz
 from rest_framework import serializers
-from datetime import datetime, timezone
-from dateutil.relativedelta import relativedelta
-
+from datetime import datetime
 from apps.reserva.models import Cancha, Reserva, Turno
+from apps.reserva.api.conversion import convertir_moneda
+
 
 
 class CanchaSerializer(serializers.ModelSerializer):
@@ -92,6 +94,8 @@ class ReservaReadSerializer(serializers.ModelSerializer):
     cancha = serializers.StringRelatedField(many=False)
     usuario = serializers.StringRelatedField(many = False)
     turno = serializers.StringRelatedField(many=False)
+
+    total_usd = serializers.SerializerMethodField()
     class Meta:
         model = Reserva
         fields = [
@@ -101,8 +105,13 @@ class ReservaReadSerializer(serializers.ModelSerializer):
             'turno',
             'cancha',
             'total',
+            'total_usd',
             'activa'
         ]
         read_only_fields = [
             'uuid','total', 'usuario'
         ]
+
+    def get_total_usd (self, obj):
+        return convertir_moneda(obj.total, 'USD')
+
