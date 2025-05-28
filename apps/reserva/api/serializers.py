@@ -58,9 +58,15 @@ class ReservaSerializer(serializers.ModelSerializer):
             ]
 
     def validate(self, data):
-        cancha = data.get('cancha')
-        fecha = data.get('fecha')
-        turno = data.get('turno')
+        #cancha = data.get('cancha')
+        #fecha = data.get('fecha')
+        #turno = data.get('turno')
+        # DAN ERROR EN PATCH YA QUE AL ENVIARSE LA INFORMACION PARCIAL EN EL BODY NO LA ENCUENTRA
+
+        #SOLUCION: SI NO LO ENCUENTRA BUSQUE EN EL ATRIBUTO DE LA RESERVA Y CAMBIE
+        cancha = data.get('cancha', getattr(self.instance, 'cancha'))
+        fecha = data.get('fecha', getattr(self.instance, 'fecha'))
+        turno = data.get('turno', getattr(self.instance, 'turno'))
 
         # Si estás actualizando una reserva, excluí esa instancia de la búsqueda
         reservas = Reserva.objects.filter(
