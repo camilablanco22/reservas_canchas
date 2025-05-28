@@ -4,18 +4,7 @@
 
 ### Introducción
 
-El sistema tiene como objetivo gestionar las reservas de canchas de pádel en un club deportivo.  
-Los usuarios podrán:
-
-- Consultar la disponibilidad de turnos (general o por cancha).
-- Realizar, modificar o cancelar reservas.
-- Visualizar su historial de reservas.
-
-Además, los empleados del club podrán:
-
-- Agregar o modificar canchas.
-- Consultar reservas por día, por período o por cancha.
-- Visualizar únicamente las reservas activas.
+El sistema tiene como objetivo permitir la gestión de reservas de canchas de pádel en un club deportivo. Los usuarios podrán consultar la disponibilidad de turnos en general o especificamente de una cancha, hacer reservas, modificar o cancelar sus turnos, y visualizar el historial de reservas realizadas. Además, debe permitir a los usuarios de empleados agregar o modificar canchas, visualizar las reservas de un día o de un período determinado, las reservas de una cancha específica y reservas unicamente activas.
 
 ---
 
@@ -36,7 +25,7 @@ Además, los empleados del club podrán:
 - `numero`: número identificador de la cancha.
 - `tipo_superficie`: cemento, sintético.
 - `precio_por_hora`: valor monetario por hora de uso.
-- `estado`: activa/inactiva.
+- `activa`: true/false.
 
 ### Turno
 
@@ -46,10 +35,10 @@ Además, los empleados del club podrán:
 ### Reserva
 
 - `usuario`: persona que realiza la reserva.
-- `cancha`: cancha seleccionada.
+- `cancha`: Cancha seleccionada.
 - `fecha`: día de la reserva.
-- `turno`: franja horaria reservada.
-- `estado`: activa o cancelada.
+- `turno`: Turno elegido.
+- `activa`: true/false.
 - `total`: monto final de la reserva.
 
 ---
@@ -63,8 +52,8 @@ Además, los empleados del club podrán:
 - Desarrollar al menos un endpoint con lógica adicional (ej. cálculo de valor en USD).
 - Agregar validaciones avanzadas en los serializadores.
 - Incluir métodos adicionales en modelos o serializadores para cálculos específicos (ej. total de la reserva).
-- Utilizar vistas del DRF (`APIView`, `ViewSet`, `GenericAPIView`, etc.).
-- Implementar autenticación con JWT y permisos con `DjangoModelPermission`.
+- Utilizar vistas del DRF (APIView, ViewSet, GenericAPIView, etc.).
+- Implementar autenticación con JWT y permisos con DjangoModelPermission.
 - Agregar filtros y paginación en listados.
 - Consumir una API externa para conversión a dólares (https://dolarapi.com/v1/dolares/blue).
 - Mantener una estructura de proyecto clara y ordenada.
