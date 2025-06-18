@@ -28,7 +28,7 @@ class TurnoSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if data['hora_fin']<= data['hora_inicio']:
-            raise serializers.ValidationError("La hora de incio no puede ser posterior a la hora de fin")
+            raise serializers.ValidationError("La hora de inicio no puede ser posterior a la hora de fin")
         return data
 
 class TurnoDisponibleSerializer(serializers.ModelSerializer):
@@ -68,7 +68,7 @@ class ReservaSerializer(serializers.ModelSerializer):
         fecha = data.get('fecha', getattr(self.instance, 'fecha', None))
         turno = data.get('turno', getattr(self.instance, 'turno', None))
 
-        # Si estás actualizando una reserva, excluí esa instancia de la búsqueda
+
         reservas = Reserva.objects.filter(
             activa=True, #Por si se pidio una reserva, pero posteriormente se dio de baja
             cancha=cancha,

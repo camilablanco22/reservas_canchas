@@ -18,3 +18,28 @@ def get_reserva(get_cancha, get_turno, get_user_generico):
         }
     )
     return reserva
+
+
+@pytest.fixture
+def get_reservas(get_canchas, get_turno, get_user_generico):
+    cancha1, cancha2 = get_canchas
+    turno = get_turno
+    fecha = "2025-05-29"
+
+    reserva1, _ = Reserva.objects.get_or_create(
+        fecha=fecha,
+        turno=turno,
+        cancha=cancha1,
+        defaults={
+            "usuario": get_user_generico,
+        }
+    )
+    reserva2, _ = Reserva.objects.get_or_create(
+        fecha=fecha,
+        turno=turno,
+        cancha=cancha2,
+        defaults={
+            "usuario": get_user_generico,
+        }
+    )
+    return reserva1, reserva2

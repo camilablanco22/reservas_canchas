@@ -26,7 +26,6 @@ class CanchaViewSet(viewsets.ModelViewSet):
 class ReservaViewSet(viewsets.ModelViewSet):
     lookup_field = 'uuid'
     queryset= Reserva.objects.all()
-    filterset_fields = ['fecha', 'cancha', 'estado']
     filterset_class = ReservaFilter
 
     def get_serializer_class(self):
@@ -35,9 +34,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
         return ReservaSerializer
 
     def perform_create(self, serializer):
-        #user = Usuario.objects.first()
         serializer.save(usuario=self.request.user)
-        #serializer.save(usuario=user)
 
     #Controla que un usuario normal solo pueda las reservas que el ha realizado
     def get_queryset(self):
