@@ -40,6 +40,9 @@ class Reserva(models.Model):
     activa = models.BooleanField(default=True)
     total = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True)
 
+    class Meta:
+        ordering = ['-fecha']
+
     def calcular_total(self):
         inicio = datetime.combine(date.min, self.turno.hora_inicio)
         fin = datetime.combine(date.min, self.turno.hora_fin)
