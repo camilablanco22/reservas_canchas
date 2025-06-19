@@ -15,3 +15,15 @@ def convertir_moneda(monto, moneda_destino):
         raise Exception(f"Tasa de cambio no encontrada para {moneda_destino}")
 
     return round(monto * Decimal(str(tasa)), 2)
+
+def calcular_duracion_en_horas(turno):
+    inicio = turno.hora_inicio
+    fin = turno.hora_fin
+
+    # Convertir a segundos desde medianoche
+    inicio_seg = inicio.hour * 3600 + inicio.minute * 60 + inicio.second
+    fin_seg = fin.hour * 3600 + fin.minute * 60 + fin.second
+
+    # Calcular duración en horas como Decimal
+    segundos = fin_seg - inicio_seg
+    return Decimal(segundos) / Decimal(3600)

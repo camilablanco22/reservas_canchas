@@ -3,7 +3,7 @@ from pytest_django.fixtures import client
 from rest_framework import status
 from django.urls import reverse
 from datetime import date, timedelta
-from .fixtures_user import get_authenticated_client, get_user_generico, api_client,  get_intruso
+from .fixtures_user import get_authenticated_client, get_user_generico, api_client,  get_usuario_sin_permisios
 from .fixtures_cancha import get_cancha, get_canchas
 from .fixtures_turno import get_turno
 from ..models import Turno
@@ -41,3 +41,10 @@ def test_crear_turno_fallido(get_authenticated_client):
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert "la hora de inicio no puede ser posterior a la hora de fin" in str(response.data["non_field_errors"][0]).lower()
+
+@pytest.mark.django_db
+def test_get_turno_sin_autorizar(get_usuario_sin_permisios, get_turno):
+    client, user = get_usuario_sin_permisios
+    response = client.get(f'/api/reserva/')
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN

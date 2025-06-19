@@ -2,6 +2,7 @@ import pytest
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.models import Permission
 
 User = get_user_model()
 
@@ -39,8 +40,20 @@ def get_authenticated_client(get_user_generico, api_client):
     return api_client
 
 @pytest.fixture
-def get_intruso(api_client):
-    intruso = create_user(username="intruso", documento_identidad="99999999", first_name='intruso', last_name='intruso', email="intruso@root.com", is_superuser=True, is_staff=True)
+def get_usuario_sin_permisios(api_client):
+    intruso = create_user(username="intruso", documento_identidad="99999999", first_name='intruso', last_name='intruso', email="intruso@root.com")
     access_token = get_jwt_token_for_user(intruso)
     api_client.credentials(HTTP_AUTHORIZATION='Bearer ' + access_token)
     return api_client, intruso
+
+@pytest.fixture
+def get_usuario_solo_view_reserva(api_client):
+    user = create_user(username="intruso", documento_identidad="99999999", first_name='intruso', last_name='intruso', email="intruso@root.com")
+
+    # Asignar solo el permiso "view_reserva"
+    permiso_view = Permission.objects.get(codename="view_reserva")
+    user.user_permissions.set([permiso_view])
+
+    access_token = get_jwt_token_for_user(user)
+    api_client.credentials(HTTP_AUTHORIZATION='Bearer ' + access_token)
+    return api_client, user

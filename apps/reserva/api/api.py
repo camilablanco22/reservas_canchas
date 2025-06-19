@@ -41,7 +41,10 @@ class ReservaViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if user.is_staff or user.is_superuser:
             return Reserva.objects.all()
-        return Reserva.objects.filter(usuario=user)
+        # Para acciones list() solo mostramos sus propias reservas
+        if self.action == 'list':
+            return Reserva.objects.filter(usuario=user)
+        return Reserva.objects.all()  # para retrieve usamos control en get_object()
 
     #Control que no se pueda entrar a la url de una reserva ajena
     def get_object(self):

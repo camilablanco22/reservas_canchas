@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 import pytest
 from .fixtures_user import get_authenticated_client, get_user_generico, api_client
 from apps.reserva.models import Reserva
@@ -7,7 +9,7 @@ from apps.reserva.models import Reserva
 def get_reserva(get_cancha, get_turno, get_user_generico):
     cancha = get_cancha
     turno = get_turno
-    fecha = "2025-05-29"
+    fecha = fecha = str(date.today() + timedelta(days=1))
 
     reserva, _ = Reserva.objects.get_or_create(
         fecha=fecha,
@@ -24,7 +26,7 @@ def get_reserva(get_cancha, get_turno, get_user_generico):
 def get_reservas(get_canchas, get_turno, get_user_generico):
     cancha1, cancha2 = get_canchas
     turno = get_turno
-    fecha = "2025-05-29"
+    fecha = str(date.today() + timedelta(days=1))
 
     reserva1, _ = Reserva.objects.get_or_create(
         fecha=fecha,

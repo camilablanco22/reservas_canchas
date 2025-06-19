@@ -1,12 +1,16 @@
+from decimal import Decimal
+
 import pytest
 from pytest_django.fixtures import client
 from rest_framework import status
 from django.urls import reverse
-from datetime import date, timedelta
-from .fixtures_user import get_authenticated_client, get_user_generico, api_client,  get_intruso
+from datetime import date, timedelta, datetime
+from .fixtures_user import get_authenticated_client, get_user_generico, api_client
 from .fixtures_cancha import get_cancha, get_canchas
 from .fixtures_turno import get_turno
 from .fixtures_reserva import get_reservas, get_reserva
+from ..api.conversion import calcular_duracion_en_horas
+
 
 #Verificar que las operaciones CRUD funcionan correctamente
 #GET
@@ -42,6 +46,10 @@ def test_crear_reserva(get_authenticated_client, get_cancha, get_turno):
     assert response.status_code == status.HTTP_201_CREATED
     assert response.data["cancha"] == get_cancha.id
     assert response.data["turno"] == get_turno.id
+
+    # Calcula el total esperado
+    total_esperado = cancha.precio_por_hora * calcular_duracion_en_horas(turno) #Calculo el precio de otra forma para asegurar que es el correcto
+    assert Decimal(response.data["total"]) == total_esperado
 
 #PUT
 @pytest.mark.django_db
